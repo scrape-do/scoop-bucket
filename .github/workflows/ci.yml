@@ -1,0 +1,90 @@
+# SPDX-License-Identifier: Apache-2.0
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions: {}
+
+# GitHub-hosted only and no token use: the org's IP allow list rejects token
+# calls from GitHub-hosted runners, and everything these jobs need (the release
+# archives on GitHub, the Scoop installer) is a public, anonymous download.
+
+jobs:
+  # Scoop installs only the architecture of the runner (x64) and checks its
+  # hash, so the arm64 entries would go untested there. This job downloads
+  # every archive a manifest names and compares it with the manifest's hash.
+  hashes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check every url and hash
+        run: |
+          set -euo pipefail
+          for m in bucket/*.json; do
+            jq -e . "$m" >/dev/null
+            jq -r '.architecture[] | "\(.url) \(.hash)"' "$m" |
+              while read -r url hash; do
+                got="$(curl -fsSL --retry 3 "$url" | sha256sum | cut -d' ' -f1)"
+                if [ "$got" != "$hash" ]; then
+                  echo "::error file=$m::$url has sha256 $got, manifest says $hash"
+                  exit 1
+                fi
+                echo "ok $url"
+              done
+          done
+
+  install:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The runner's user is an administrator, which the installer refuses
+      # without -RunAsAdmin.
+      - name: Install Scoop
+        run: |
+          irm get.scoop.sh -outfile install.ps1
+          .\install.ps1 -RunAsAdmin
+          Join-Path $env:USERPROFILE 'scoop\shims' | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+      # scoop bucket add clones the checkout; the clone must be the commit
+      # under review, not whatever branch git falls back to.
+      - name: Add the checkout as a bucket
+        run: |
+          scoop bucket add local "$env:GITHUB_WORKSPACE"
+          $bucket = Join-Path $env:USERPROFILE 'scoop\buckets\local'
+          $want = git rev-parse HEAD
+          $got = git -C $bucket rev-parse HEAD
+          if ($got -ne $want) { throw "bucket is at $got, checkout is at $want" }
+      - name: Install, run and uninstall each app
+        run: |
+          # scoop is a PowerShell script, which leaves $LASTEXITCODE alone when
+          # it succeeds, so reset it before each call and also check the
+          # command it should have installed.
+          $apps = @{ 'sdo' = '--version'; 'sdo-mcp' = 'version' }
+          foreach ($app in $apps.Keys) {
+            $version = (Get-Content "bucket\$app.json" -Raw | ConvertFrom-Json).version
+            $global:LASTEXITCODE = 0
+            scoop install "local/$app"
+            if ($LASTEXITCODE -ne 0 -or -not (Get-Command $app -ErrorAction SilentlyContinue)) {
+              throw "scoop install local/$app failed"
+            }
+            $out = & $app $apps[$app] | Out-String
+            if ($LASTEXITCODE -ne 0) { throw "$app $($apps[$app]) failed" }
+            if (-not $out.Contains($version)) { throw "$app printed '$out', expected $version" }
+            Write-Output "ok $app $version"
+            $global:LASTEXITCODE = 0
+            scoop uninstall $app
+            if ($LASTEXITCODE -ne 0) { throw "scoop uninstall $app failed" }
+          }
