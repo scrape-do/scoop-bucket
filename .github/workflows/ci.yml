@@ -40,6 +40,10 @@ jobs:
               done
           done
 
+  # Scoop installs straight from each manifest file in the checkout, which is
+  # exactly the commit under review. scoop bucket add accepts only a git URL,
+  # not a local directory, and adding the pushed repository would test main,
+  # not the pull request.
   install:
     runs-on: windows-latest
     permissions:
@@ -58,15 +62,6 @@ jobs:
           irm get.scoop.sh -outfile install.ps1
           .\install.ps1 -RunAsAdmin
           Join-Path $env:USERPROFILE 'scoop\shims' | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
-      # scoop bucket add clones the checkout; the clone must be the commit
-      # under review, not whatever branch git falls back to.
-      - name: Add the checkout as a bucket
-        run: |
-          scoop bucket add local "$env:GITHUB_WORKSPACE"
-          $bucket = Join-Path $env:USERPROFILE 'scoop\buckets\local'
-          $want = git rev-parse HEAD
-          $got = git -C $bucket rev-parse HEAD
-          if ($got -ne $want) { throw "bucket is at $got, checkout is at $want" }
       - name: Install, run and uninstall each app
         run: |
           # scoop is a PowerShell script, which leaves $LASTEXITCODE alone when
@@ -76,9 +71,9 @@ jobs:
           foreach ($app in $apps.Keys) {
             $version = (Get-Content "bucket\$app.json" -Raw | ConvertFrom-Json).version
             $global:LASTEXITCODE = 0
-            scoop install "local/$app"
+            scoop install "bucket\$app.json"
             if ($LASTEXITCODE -ne 0 -or -not (Get-Command $app -ErrorAction SilentlyContinue)) {
-              throw "scoop install local/$app failed"
+              throw "scoop install bucket\$app.json failed"
             }
             $out = & $app $apps[$app] | Out-String
             if ($LASTEXITCODE -ne 0) { throw "$app $($apps[$app]) failed" }
