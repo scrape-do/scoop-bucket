@@ -1,16 +1,16 @@
 {
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Model Context Protocol server for the Scrape.do web scraping API",
   "homepage": "https://scrape.do",
   "license": "Apache-2.0",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.2.0/sdo-mcp_0.2.0_windows_amd64.zip",
-      "hash": "efd5a0aaa5cccc335ad84f618cd3da2c686374b26bcac48a5e32aa3538c3cc31"
+      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.3.0/sdo-mcp_0.3.0_windows_amd64.zip",
+      "hash": "c6c7cd3cdd7dc01ee4426d227341b077d7c2717b2d139cbd7801ecfc55347e88"
     },
     "arm64": {
-      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.2.0/sdo-mcp_0.2.0_windows_arm64.zip",
-      "hash": "69bcd0f21fd2e71ee75c0974841b44033dfec72bb406dda716e19185ebd8f6ca"
+      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.3.0/sdo-mcp_0.3.0_windows_arm64.zip",
+      "hash": "042bd105c09c42af35d4d072ad13dd6f62acb21aba12d743a837fbe12257e388"
     }
   },
   "bin": "sdo-mcp.exe",
