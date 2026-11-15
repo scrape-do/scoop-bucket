@@ -1,33 +1,33 @@
 {
-  "version": "0.3.0",
-  "description": "Model Context Protocol server for the Scrape.do web scraping API",
-  "homepage": "https://scrape.do",
-  "license": "Apache-2.0",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.3.0/sdo-mcp_0.3.0_windows_amd64.zip",
-      "hash": "c6c7cd3cdd7dc01ee4426d227341b077d7c2717b2d139cbd7801ecfc55347e88"
-    },
-    "arm64": {
-      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.3.0/sdo-mcp_0.3.0_windows_arm64.zip",
-      "hash": "042bd105c09c42af35d4d072ad13dd6f62acb21aba12d743a837fbe12257e388"
-    }
-  },
-  "bin": "sdo-mcp.exe",
-  "checkver": {
-    "github": "https://github.com/scrape-do/sdo-mcp"
-  },
-  "autoupdate": {
+    "version": "0.3.1",
+    "description": "Model Context Protocol server for the Scrape.do web scraping API",
+    "homepage": "https://scrape.do",
+    "license": "Apache-2.0",
     "architecture": {
-      "64bit": {
-        "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v$version/sdo-mcp_$version_windows_amd64.zip"
-      },
-      "arm64": {
-        "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v$version/sdo-mcp_$version_windows_arm64.zip"
-      }
+        "64bit": {
+            "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.3.1/sdo-mcp_0.3.1_windows_amd64.zip",
+            "hash": "d3cfc8102748ee805bce8d39f9f2952195e12abd824492c4ddd63b848855f08c"
+        },
+        "arm64": {
+            "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v0.3.1/sdo-mcp_0.3.1_windows_arm64.zip",
+            "hash": "7af161a5f2f9da7965dc8204326faa865755b12bb8238a8cfa43f39d2e4eb8ce"
+        }
     },
-    "hash": {
-      "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v$version/checksums.txt"
+    "bin": "sdo-mcp.exe",
+    "checkver": {
+        "github": "https://github.com/scrape-do/sdo-mcp"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v$version/sdo-mcp_$version_windows_amd64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v$version/sdo-mcp_$version_windows_arm64.zip"
+            }
+        },
+        "hash": {
+            "url": "https://github.com/scrape-do/sdo-mcp/releases/download/v$version/checksums.txt"
+        }
     }
-  }
 }
