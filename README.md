@@ -44,7 +44,7 @@ published to this bucket.
 
 Because the release pipeline writes these files (the commits are by `scrape-do-publisher[bot]` and titled
 `sdo X.Y.Z` or `sdo-mcp X.Y.Z`), a hand edit here is overwritten by the next release. A change to a manifest belongs
-in its template in `tools/pkgmanifests` of [sdo-cli](https://github.com/scrape-do/sdo-cli/tree/main/tools/pkgmanifests)
+in its template in `tools/pkgmanifests/main.go` of [sdo-cli](https://github.com/scrape-do/sdo-cli/tree/main/tools/pkgmanifests)
 or [sdo-mcp](https://github.com/scrape-do/sdo-mcp/tree/main/tools/pkgmanifests).
 
 ## Verifying a download
